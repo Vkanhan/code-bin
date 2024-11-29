@@ -1,0 +1,22 @@
+{{define "title"}}Home{{end}}
+{{define "main"}}
+<div class="center-child">
+    <h2>Welcome to Codebin</h2>
+    <p>Your latest code will appear here soon!</p>
+    <button onclick="alert('Ready to code?')" style="
+        background: #00aaff;
+        border: 1px solid #00aaff;
+        padding: 0.8rem 1.2rem;
+        color: #121212;
+        font-size: 1rem;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+    " 
+    onmouseover="this.style.background='#70dbff'; this.style.boxShadow='0 0 10px rgba(0, 170, 255, 0.6)';"
+    onmouseout="this.style.background='#00aaff'; this.style.boxShadow='none';">
+        Show me the Code!
+    </button>
+</div>
+{{end}}
