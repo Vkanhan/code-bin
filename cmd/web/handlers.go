@@ -16,6 +16,17 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	gists, err := app.gists.Latest()
+	if err != nil {
+		app.serverError(w, err)
+		return 
+	}
+
+	for gist := range gists {
+		fmt.Fprintf(w, "%+v\n", gist)
+	}
+
+
 	files := []string{
 		"./ui/html/base.html",
 		"./ui/html/partials/nav.html",
@@ -48,13 +59,13 @@ func (app *application) gistCreate(w http.ResponseWriter, r *http.Request) {
 	expires := 5
 
 
-	err := app.gist.Insert(title, content, expires)
+	err := app.gists.Insert(title, content, expires)
 	if err != nil {
 		app.serverError(w, err)
 		return 
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/gist/view?id=$d"), http.StatusSeeOther)
+	http.Redirect(w, r, "/gist/view", http.StatusSeeOther)
 }
 
 func (app *application) gistView(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +75,7 @@ func (app *application) gistView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	gist, err := app.gist.Get(id)
+	gist, err := app.gists.Get(id)
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecords) {
 			app.notFound(w)

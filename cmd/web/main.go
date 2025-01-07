@@ -16,11 +16,10 @@ import (
 type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
-	gist     *models.GistModel
+	gists     *models.GistModel
 }
 
 func main() {
-
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	flag.Parse()
 
@@ -36,7 +35,7 @@ func main() {
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
-		gist:     &models.GistModel{DB: db},
+		gists:     &models.GistModel{DB: db},
 	}
 
 	server := &http.Server{
@@ -53,7 +52,6 @@ func main() {
 }
 
 func connectToDB() (*sql.DB, error) {
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
