@@ -1,10 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
+
+	"github.com/Vkanhan/code-bin/internal/models"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +43,18 @@ func (app *application) gistCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("Create gist"))
+	title := "Einstein"
+	content := "Photonics"
+	expires := 5
+
+
+	err := app.gist.Insert(title, content, expires)
+	if err != nil {
+		app.serverError(w, err)
+		return 
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/gist/view?id=$d"), http.StatusSeeOther)
 }
 
 func (app *application) gistView(w http.ResponseWriter, r *http.Request) {
@@ -50,5 +64,15 @@ func (app *application) gistView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Display the gist with ID: %d", id)
+	gist, err := app.gist.Get(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecords) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return 
+	}
+
+	fmt.Fprintf(w, "%+v", gist)
 }
