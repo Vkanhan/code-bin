@@ -2,9 +2,9 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"html/template"
 	"net/http"
+	"path/filepath"
 	"strconv"
 
 	"github.com/Vkanhan/code-bin/internal/models"
@@ -22,24 +22,12 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for gist := range gists {
-		fmt.Fprintf(w, "%+v\n", gist)
-	}
-
-	files := []string{
-		"./ui/html/base.html",
-		"./ui/html/partials/nav.html",
-		"./ui/html/pages/home.html",
-	}
-
 	//holds dynamic gist data
 	data := &templateData{
 		Gists: gists,
 	}
 
-	for _, file := range files {
-		app.renderTemplate(w, file, data)
-	}
+	app.renderTemplate(w, data, "./ui/html/pages/home.html")
 
 }
 
@@ -80,24 +68,30 @@ func (app *application) gistView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
-		"./ui/html/base.html",
-		"./ui/html/partials/nav.html",
-		"./ui/html/pages/home.html",
-	}
-
 	data := &templateData{
 		Gist: gist,
 	}
 
-	for _, file := range files {
-		app.renderTemplate(w, file, data)
-	}
+	app.renderTemplate(w, data, "./ui/html/pages/home.html")
 
 }
 
-func (app *application) renderTemplate(w http.ResponseWriter, templatePath string, data any) {
-	templ, err := template.ParseFiles(templatePath)
+func (app *application) renderTemplate(w http.ResponseWriter, data any, pageTemplate string) {
+	commonFiles, err := filepath.Glob("./ui/html/{base,partials/nav}.html")
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	files, err := filepath.Glob(pageTemplate)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	files = append(commonFiles, files...)
+
+	templ, err := template.ParseFiles(files...)
 	if err != nil {
 		app.serverError(w, err)
 		return
