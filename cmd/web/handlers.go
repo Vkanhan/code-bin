@@ -32,21 +32,15 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		"./ui/html/pages/home.html",
 	}
 
-	tmpl, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
 	//templateData struct holding dynamic gist data
 	data := &templateData{
 		Gists: gists,
 	}
 
-	err = tmpl.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, err)
+	for _, file := range files {
+		app.renderTemplate(w, file, data)
 	}
+	
 }
 
 func (app *application) gistCreate(w http.ResponseWriter, r *http.Request) {
@@ -93,19 +87,24 @@ func (app *application) gistView(w http.ResponseWriter, r *http.Request) {
 		"./ui/html/pages/home.html",
 	}
 
-	tmpl, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
 	//templateData struct holding dynamic gist data
 	data := &templateData{
 		Gist: gist,
 	}
 
-	err = tmpl.ExecuteTemplate(w, "base", data)
+	for _, file := range files {
+		app.renderTemplate(w, file, data)
+	}
+	
+}
+
+func (app *application) renderTemplate(w http.ResponseWriter, templatePath string, data any) {
+	templ, err := template.ParseFiles(templatePath)
 	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	if err := templ.Execute(w, data); err != nil {
 		app.serverError(w, err)
 	}
 }
