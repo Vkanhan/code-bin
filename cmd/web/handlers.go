@@ -32,7 +32,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		"./ui/html/pages/home.html",
 	}
 
-	//templateData struct holding dynamic gist data
+	//holds dynamic gist data
 	data := &templateData{
 		Gists: gists,
 	}
@@ -86,7 +86,6 @@ func (app *application) gistView(w http.ResponseWriter, r *http.Request) {
 		"./ui/html/pages/home.html",
 	}
 
-	//templateData struct holding dynamic gist data
 	data := &templateData{
 		Gist: gist,
 	}
