@@ -26,7 +26,6 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "%+v\n", gist)
 	}
 
-
 	files := []string{
 		"./ui/html/base.html",
 		"./ui/html/partials/nav.html",
@@ -36,14 +35,17 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles(files...)
 	if err != nil {
 		app.serverError(w, err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	err = tmpl.ExecuteTemplate(w, "base", nil)
+	//templateData struct holding dynamic gist data
+	data := &templateData{
+		Gists: gists,
+	}
+
+	err = tmpl.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		app.serverError(w, err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
 }
 
@@ -85,5 +87,25 @@ func (app *application) gistView(w http.ResponseWriter, r *http.Request) {
 		return 
 	}
 
-	fmt.Fprintf(w, "%+v", gist)
+	files := []string{
+		"./ui/html/base.html",
+		"./ui/html/partials/nav.html",
+		"./ui/html/pages/home.html",
+	}
+
+	tmpl, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	//templateData struct holding dynamic gist data
+	data := &templateData{
+		Gist: gist,
+	}
+
+	err = tmpl.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		app.serverError(w, err)
+	}
 }
