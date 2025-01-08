@@ -1,23 +1,15 @@
 {{define "nav"}}
-<nav style="
-    display: flex;
-    justify-content: left;
-    background: #1e1e1e;
-    padding: 0.8rem 1rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 170, 255, 0.2);
-">
-    <a href="/" style="
-        text-decoration: none;
-        color: #f5f5f5;
-        padding: 0.5rem 1rem;
-        border: 1px solid #333;
-        border-radius: 5px;
-        transition: all 0.3s ease;
-    " 
-    onmouseover="this.style.background='#00aaff'; this.style.color='#121212'; this.style.borderColor='#00aaff';"
-    onmouseout="this.style.background='transparent'; this.style.color='#f5f5f5'; this.style.borderColor='#333';">
-        Home
-    </a>
+<nav>
+    <div>
+        <a href="/">Home</a>
+        <a href="/snippet/create">Create snippet</a>
+    </div>
+    <div>
+        <a href="/user/signup">Signup</a>
+        <a href="/user/login">Login</a>
+        <form action="/user/logout" method="POST">
+            <button>Logout</button>
+        </form>
+    </div>
 </nav>
 {{end}}

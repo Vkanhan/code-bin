@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"html/template"
 	"net/http"
 	"path/filepath"
@@ -99,4 +100,16 @@ func (app *application) renderTemplate(w http.ResponseWriter, data any, pageTemp
 	if err := templ.Execute(w, data); err != nil {
 		app.serverError(w, err)
 	}
+}
+
+func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Signing up")
+}
+
+func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Logging in")
+}
+
+func (app *application) userLogout(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Logging out")
 }
