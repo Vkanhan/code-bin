@@ -24,10 +24,10 @@ func (g *GistModel) Insert(title, content string, expires int) error {
 
 	_, err := g.DB.Exec(sqlStatement, title, content, expires)
 	if err != nil {
-		return err 
+		return err
 	}
 
-	return nil 
+	return nil
 }
 
 func (g *GistModel) Get(id int) (*Gist, error) {
@@ -43,10 +43,10 @@ func (g *GistModel) Get(id int) (*Gist, error) {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNoRecords //better encapsulation
 		} else {
-			return nil, err 
+			return nil, err
 		}
 	}
-	return nil, nil 
+	return nil, nil
 }
 
 func (g *GistModel) Latest() ([]*Gist, error) {
@@ -55,7 +55,7 @@ func (g *GistModel) Latest() ([]*Gist, error) {
 
 	rows, err := g.DB.Query(sqlStatement)
 	if err != nil {
-		return nil, err 
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -66,13 +66,13 @@ func (g *GistModel) Latest() ([]*Gist, error) {
 
 		err = rows.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
 		if err != nil {
-			return nil, err 
+			return nil, err
 		}
 		gists = append(gists, s)
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, err 
+		return nil, err
 	}
-	return gists, nil 
+	return gists, nil
 }

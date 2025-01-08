@@ -16,7 +16,7 @@ import (
 type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
-	gists     *models.GistModel
+	gists    *models.GistModel
 }
 
 func main() {
@@ -35,7 +35,7 @@ func main() {
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
-		gists:     &models.GistModel{DB: db},
+		gists:    &models.GistModel{DB: db},
 	}
 
 	server := &http.Server{

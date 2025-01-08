@@ -19,7 +19,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	gists, err := app.gists.Latest()
 	if err != nil {
 		app.serverError(w, err)
-		return 
+		return
 	}
 
 	for gist := range gists {
@@ -40,7 +40,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	for _, file := range files {
 		app.renderTemplate(w, file, data)
 	}
-	
+
 }
 
 func (app *application) gistCreate(w http.ResponseWriter, r *http.Request) {
@@ -54,11 +54,10 @@ func (app *application) gistCreate(w http.ResponseWriter, r *http.Request) {
 	content := "Photonics"
 	expires := 5
 
-
 	err := app.gists.Insert(title, content, expires)
 	if err != nil {
 		app.serverError(w, err)
-		return 
+		return
 	}
 
 	http.Redirect(w, r, "/gist/view", http.StatusSeeOther)
@@ -78,7 +77,7 @@ func (app *application) gistView(w http.ResponseWriter, r *http.Request) {
 		} else {
 			app.serverError(w, err)
 		}
-		return 
+		return
 	}
 
 	files := []string{
@@ -95,7 +94,7 @@ func (app *application) gistView(w http.ResponseWriter, r *http.Request) {
 	for _, file := range files {
 		app.renderTemplate(w, file, data)
 	}
-	
+
 }
 
 func (app *application) renderTemplate(w http.ResponseWriter, templatePath string, data any) {
