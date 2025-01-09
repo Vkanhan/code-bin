@@ -17,7 +17,7 @@ type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
 	gists    *models.GistModel
-	users    *models.User
+	users    *models.UserModel
 }
 
 func main() {
@@ -37,7 +37,7 @@ func main() {
 		errorLog: errorLog,
 		infoLog:  infoLog,
 		gists:    &models.GistModel{DB: db},
-		users: &models.UserModel{DB: db}
+		users:    &models.UserModel{DB: db},
 	}
 
 	server := &http.Server{

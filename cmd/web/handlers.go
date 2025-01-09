@@ -23,10 +23,8 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//holds dynamic gist data
-	data := &templateData{
-		Gists: gists,
-	}
+	data := app.newTemplateData()
+	data.Gists = gists
 
 	app.renderTemplate(w, data, "./ui/html/pages/home.html")
 
@@ -102,8 +100,25 @@ func (app *application) renderTemplate(w http.ResponseWriter, data any, pageTemp
 	}
 }
 
+type userSignupForm struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Signing up")
+	form := userSignupForm{}
+
+	if err := r.ParseForm(); err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	form.Name = r.FormValue("name")
+	form.Email = r.FormValue("email")
+	form.Password = r.FormValue("password")
+
+	app.renderTemplate(w, form, "signup.html")
 }
 
 func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {

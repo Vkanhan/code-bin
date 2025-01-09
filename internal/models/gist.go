@@ -32,7 +32,7 @@ func (g *GistModel) Insert(title, content string, expires int) error {
 
 func (g *GistModel) Get(id int) (*Gist, error) {
 	sqlStatement := `SELECT id, title, content, created, expires FROM gist 
-					WHERE expired > UTC_TIMESTAMP() AND id=$1`
+					WHERE expired > NOW() AND id=$1`
 
 	row := g.DB.QueryRow(sqlStatement, id)
 
@@ -51,7 +51,7 @@ func (g *GistModel) Get(id int) (*Gist, error) {
 
 func (g *GistModel) Latest() ([]*Gist, error) {
 	sqlStatement := `SELECT id, title, content, created, expires FROM gist
-					WHERE expired > UTC_TIMESTAMP() ORDER BY DESC LIMIT 10`
+					WHERE expired > NOW() ORDER BY DESC LIMIT 10`
 
 	rows, err := g.DB.Query(sqlStatement)
 	if err != nil {

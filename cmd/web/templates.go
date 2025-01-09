@@ -6,6 +6,7 @@ import (
 
 // templateData act as holds dynamic data that will be passed to html templates
 type templateData struct {
-	Gist  *models.Gist
-	Gists []*models.Gist
+	CurrentYear int
+	Gist        *models.Gist
+	Gists       []*models.Gist
 }
