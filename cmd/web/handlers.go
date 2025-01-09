@@ -69,9 +69,9 @@ func (app *application) gistView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &templateData{
-		Gist: gist,
-	}
+	//to get the templateData struct
+	data := app.newTemplateData()
+	data.Gist = gist
 
 	app.renderTemplate(w, data, "./ui/html/pages/home.html")
 
@@ -109,16 +109,12 @@ type userSignupForm struct {
 }
 
 func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
-	form := userSignupForm{}
+	var form userSignupForm
 
-	if err := r.ParseForm(); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&form); err != nil {
 		app.serverError(w, err)
-		return
+		return 
 	}
-
-	form.Name = r.FormValue("name")
-	form.Email = r.FormValue("email")
-	form.Password = r.FormValue("password")
 
 	app.renderTemplate(w, form, "signup.html")
 }

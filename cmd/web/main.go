@@ -28,7 +28,7 @@ func main() {
 
 	addr := os.Getenv("PORT")
 	if addr == "" {
-		addr = ":4000" // Default to ":4000" if not set
+		log.Println("PORT is not available in .env file")
 	}
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)

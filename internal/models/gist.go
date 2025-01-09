@@ -46,7 +46,7 @@ func (g *GistModel) Get(id int) (*Gist, error) {
 			return nil, err
 		}
 	}
-	return nil, nil
+	return s, nil
 }
 
 func (g *GistModel) Latest() ([]*Gist, error) {

@@ -36,7 +36,7 @@ func (m *UserModel) Insert(name, email, password string) error {
 		return ErrInvalidPassword
 	}
 
-	HashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 60)
+	HashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	if err != nil {
 		return err
 	}
