@@ -1,4 +1,4 @@
-{{define "title"}}Create a New Gist{{end}} 
+<!-- {{define "title"}}Create a New Gist{{end}} 
 {{define "main"}} 
 <form action='/gist/create' method='POST'>
     <div>
@@ -29,4 +29,65 @@
         <input type='submit' value='Publish gist'>
     </div>
 </form>
+{{end}} -->
+
+{{define "main"}}
+<form id="gistForm">
+    <div>
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+    </div>
+    
+    <div>
+        <label for="content">Content:</label>
+        <textarea id="content" name="content" required></textarea>
+    </div>
+    
+    <div>
+        <fieldset>
+            <legend>Delete in:</legend>
+            <input type="radio" id="expires_365" name="expires" value="365" checked>
+            <label for="expires_365">One Year</label>
+            
+            <input type="radio" id="expires_7" name="expires" value="7">
+            <label for="expires_7">One Week</label>
+            
+            <input type="radio" id="expires_1" name="expires" value="1">
+            <label for="expires_1">One Day</label>
+        </fieldset>
+    </div>
+    
+    <div>
+        <button type="submit">Publish gist</button>
+    </div>
+</form>
+<script>
+document.getElementById('gistForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const title = document.getElementById('title').value;
+    const content = document.getElementById('content').value;
+    const expires = document.querySelector('input[name="expires"]:checked').value;
+
+    const payload = { title, content, expires: parseInt(expires, 10) };
+
+    try {
+        const response = await fetch('/gist/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+            window.location.href = '/gist/view';
+        } else {
+            console.error('Error:', response.statusText);
+            alert('Failed to create gist.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred.');
+    }
+});
+</script>
 {{end}}
+

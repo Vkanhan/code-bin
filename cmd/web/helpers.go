@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
-	"time"
-
-	"github.com/Vkanhan/code-bin/internal/models"
 )
 
 func (app *application) serverError(w http.ResponseWriter, err error) {
@@ -24,11 +21,4 @@ func (app *application) clientError(w http.ResponseWriter, status int) {
 
 func (app *application) notFound(w http.ResponseWriter) {
 	app.clientError(w, http.StatusNotFound)
-}
-
-func (app *application) newTemplateData() *templateData {
-	return &templateData{
-		CurrentYear: time.Now().Year(),
-		Gists:       make([]*models.Gist, 0),
-	}
 }

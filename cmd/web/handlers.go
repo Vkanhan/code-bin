@@ -3,11 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"html/template"
-	"log"
 	"net/http"
-	"path/filepath"
 	"strconv"
 
 	"github.com/Vkanhan/code-bin/internal/models"
@@ -29,7 +25,6 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	data.Gists = gists
 
 	app.renderTemplate(w, data, "./ui/html/pages/home.html")
-
 }
 
 func (app *application) gistCreate(w http.ResponseWriter, r *http.Request) {
@@ -39,11 +34,25 @@ func (app *application) gistCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	title := "Einstein"
-	content := "Photonics"
-	expires := 5
+	var requestBody struct {
+		Title   string `json:"title"`
+		Content string `json:"content"`
+		Expires int    `json:"expires"`
+	}
 
-	err := app.gists.Insert(title, content, expires)
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&requestBody)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	if requestBody.Title == "" || requestBody.Content == "" || requestBody.Expires <= 0 {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	err = app.gists.Insert(requestBody.Title, requestBody.Content, requestBody.Expires)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -74,74 +83,4 @@ func (app *application) gistView(w http.ResponseWriter, r *http.Request) {
 	data.Gist = gist
 
 	app.renderTemplate(w, data, "./ui/html/pages/home.html")
-
-}
-
-func (app *application) renderTemplate(w http.ResponseWriter, data any, pageTemplate string) {
-	commonFiles, err := filepath.Glob("./ui/html/{base,partials/nav}.html")
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	files, err := filepath.Glob(pageTemplate)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	files = append(commonFiles, files...)
-
-	templ, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-	if err := templ.Execute(w, data); err != nil {
-		app.serverError(w, err)
-	}
-}
-
-type userSignupForm struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
-	var form userSignupForm
-
-	if err := json.NewDecoder(r.Body).Decode(&form); err != nil {
-		app.serverError(w, err)
-		return 
-	}
-
-	app.renderTemplate(w, form, "signup.html")
-}
-
-func (app *application) registerUser(w http.ResponseWriter, r *http.Request) {
-	var form userSignupForm
-
-	err := json.NewDecoder(r.Body).Decode(&form)
-	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(map[string]interface{}{
-		"message": "Gist created successfully",
-		"data":    form,
-	})
-	if err != nil {
-		log.Println("Error sending response:", err)
-	}
-}
-
-func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Logging in")
-}
-
-func (app *application) userLogout(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Logging out")
 }

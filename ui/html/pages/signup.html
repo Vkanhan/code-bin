@@ -1,4 +1,68 @@
-{{define "title"}}Signup{{end}}
+{{define "main"}}
+<form id="signupForm" novalidate>
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{.Form.Name}}">
+        {{with .Form.FieldErrors.name}}
+        <span class="error">{{.}}</span>
+        {{end}}
+    </div>
+
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{.Form.Email}}">
+        {{with .Form.FieldErrors.email}}
+        <span class="error">{{.}}</span>
+        {{end}}
+    </div>
+
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+        {{with .Form.FieldErrors.password}}
+        <span class="error">{{.}}</span>
+        {{end}}
+    </div>
+
+    <div>
+        <button type="submit">Signup</button>
+    </div>
+</form>
+<script>
+document.getElementById('signupForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const payload = { name, email, password };
+
+    try {
+        const response = await fetch('/user/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+            window.location.href = '/user/welcome';
+        } else {
+            const errorData = await response.json();
+            console.error('Error:', errorData);
+            alert('Signup failed: ' + errorData.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred.');
+    }
+});
+</script>
+{{end}}
+
+
+
+
+<!-- {{define "title"}}Signup{{end}}
 {{define "main"}}
 <form action='/user/signup' method='POST' novalidate>
     <div>
@@ -29,4 +93,4 @@
         <input type='submit' value='Signup'>
     </div>
 </form>
-{{end}}
+{{end}} -->
