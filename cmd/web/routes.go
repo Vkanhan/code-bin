@@ -14,7 +14,7 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("GET /gist/view", app.gistView)
 	mux.HandleFunc("POST /gist/create", app.gistCreate)
 	mux.HandleFunc("POST /user/signup", app.userSignup)
-	mux.HandleFunc("/POST /user/signup", app.registerUser)
+	mux.HandleFunc("POST /user/signup", app.registerUser)
 	mux.HandleFunc("POST /user/login", app.userLogin)
 	mux.HandleFunc("POST /user/logout", app.userLogout)
 

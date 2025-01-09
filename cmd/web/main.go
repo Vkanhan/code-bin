@@ -2,14 +2,15 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
+	"time"
 
 	"github.com/Vkanhan/code-bin/internal/models"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 type application struct {
@@ -22,7 +23,7 @@ type application struct {
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("error loading .env file")
 	}
 
 	addr := os.Getenv("PORT")
@@ -35,7 +36,7 @@ func main() {
 
 	db, err := connectToDB()
 	if err != nil {
-		log.Fatal(err)
+		errorLog.Fatal(err)
 	}
 	defer db.Close()
 
@@ -52,7 +53,7 @@ func main() {
 		Handler:  app.routes(),
 	}
 
-	infoLog.Printf("listening to server on port: %s", addr)
+	infoLog.Printf("Starting server on %s", addr)
 	err = server.ListenAndServe()
 	if err != nil {
 		errorLog.Fatal(err)
@@ -60,6 +61,11 @@ func main() {
 }
 
 func connectToDB() (*sql.DB, error) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("error loading .env")
+	}
+
 	dbURL := os.Getenv("DB_URL")
 	if dbURL == "" {
 		log.Fatal("DB_URL is not found in the environment")
@@ -67,12 +73,24 @@ func connectToDB() (*sql.DB, error) {
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
-		log.Print("Database connection error")
+		return nil, err
 	}
 
-	if err = db.Ping(); err != nil {
-		log.Fatalf("Error pinging the database: %v", err)
+	// Add connection retry logic
+	maxRetries := 5
+	for i := 0; i < maxRetries; i++ {
+		err = db.Ping()
+		if err == nil {
+			break
+		}
+		log.Printf("Failed to connect to database (attempt %d/%d): %v", i+1, maxRetries, err)
+		if i < maxRetries-1 {
+			time.Sleep(time.Second * 5) // Wait 5 seconds before retrying
+		}
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to database after %d attempts: %v", maxRetries, err)
 	}
 
-	return db, err
+	return db, nil
 }
