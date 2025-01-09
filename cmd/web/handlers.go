@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -119,6 +121,25 @@ func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
 	form.Password = r.FormValue("password")
 
 	app.renderTemplate(w, form, "signup.html")
+}
+
+func (app *application) registerUser(w http.ResponseWriter, r *http.Request) {
+	var form userSignupForm
+
+	err := json.NewDecoder(r.Body).Decode(&form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "Gist created successfully",
+		"data":    form,
+	})
+	if err != nil {
+		log.Println("Error sending response:", err)
+	}
 }
 
 func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {

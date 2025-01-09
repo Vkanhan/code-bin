@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -21,8 +20,15 @@ type application struct {
 }
 
 func main() {
-	addr := flag.String("addr", ":4000", "HTTP network address")
-	flag.Parse()
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	addr := os.Getenv("PORT")
+	if addr == "" {
+		addr = ":4000" // Default to ":4000" if not set
+	}
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
@@ -41,12 +47,12 @@ func main() {
 	}
 
 	server := &http.Server{
-		Addr:     *addr,
+		Addr:     addr,
 		ErrorLog: errorLog,
 		Handler:  app.routes(),
 	}
 
-	infoLog.Printf("listening to server on port: %s", *addr)
+	infoLog.Printf("listening to server on port: %s", addr)
 	err = server.ListenAndServe()
 	if err != nil {
 		errorLog.Fatal(err)
@@ -54,11 +60,6 @@ func main() {
 }
 
 func connectToDB() (*sql.DB, error) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	dbURL := os.Getenv("DB_URL")
 	if dbURL == "" {
 		log.Fatal("DB_URL is not found in the environment")
